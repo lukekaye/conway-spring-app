@@ -3,7 +3,8 @@ Invoke-RestMethod `
   -Method Post `
   -ContentType "application/json" `
   -Body (ConvertTo-Json @{
-      boardName = "BLINKER"
-      steps = 10
+      board = ((0, 0), (0, 0))
+      boardName = 'BLINKER'
+      steps = -1
     } -Depth 5) `
 | ConvertTo-Json -Depth 5 -Compress
