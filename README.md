@@ -22,3 +22,4 @@ DB_PASSWORD={PASSWORD}
 - `board` can be provided in the call to the `game/next` endpoint as a representation of an array. It should be rectangular.
 - Generation `0` is the initial state of the board. Generation `1` is the first evolution, and so on.
 - `steps` provided in the call to `game/next` endpoint states the number of generations beyond the initial `0` generation that are simulated. Therefore, `steps = 10` will run the simulation up to and including generation `10`, that is, results for `0`, `1`, ..., `10` are simulated and saved. `steps` <= `0` will not run the simulation beyond the initial state.
+- `boardName` will be saved to the database with a successful `game/next` invocation, even if `board` is provided. This is intended behaviour.
