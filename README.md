@@ -1,6 +1,6 @@
 # Instructions
 
-- Install a MySQL database locally, with database name `game` (or change `spring.datasource.url` in `application.properties` correspondingly to accommodate an alternative name) and accessible on port `3306` (or, again, change `spring.datasource.url` in correspondance with the utilised port).
+- Install a MySQL database locally, with database name `game` (or change `spring.datasource.url` in `application.properties` correspondingly to accommodate an alternative name) and accessible on port `3306` (or, again, change `spring.datasource.url` in correspondence with the utilised port).
 - Give the database a username and password.
 - Create a `.env` file in the project root with the following contents, where `{USERNAME}` and `{PASSWORD}` are replaced accordingly by the username and password for your MySQL database:
 ```
