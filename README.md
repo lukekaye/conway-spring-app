@@ -1,14 +1,11 @@
 # Instructions
 
-- Install a MySQL database locally, with database name `game` (or change `spring.datasource.url` in `application.properties` correspondingly to accommodate an alternative name) and accessible on port `3306` (or, again, change `spring.datasource.url` in correspondence with the utilised port).
-- Give the database a username and password.
-- Create a `.env` file in the project root with the following contents, where `{USERNAME}` and `{PASSWORD}` are replaced accordingly by the username and password for your MySQL database:
-```
-DB_USERNAME={USERNAME}
-DB_PASSWORD={PASSWORD}
-```
+- Install a MySQL database locally, with database name `game` (or change `spring.datasource.url` in `application.properties` correspondingly to accommodate an alternative name) and accessible on port `3306` (or, again, change `spring.datasource.url` in correspondence with the utilised port). Give the database a username and password, then run it.
+    - Alternatively, install Docker Desktop and build an image using the `Dockerfile`. Run it on the configured port, passing `MYSQL_ROOT_PASSWORD`, `MYSQL_USER` and `MYSQL_PASSWORD` as environment variables. `MYSQL_ROOT_PASSWORD` is not used by this app, it is just to initialise the MySQL server since it is required by the base image.
+        - `docker-compose.yml` is included for convenience. Use it to build and run the image once a `.env` file is configured (described below) with `docker compose up -d`. Stop and remove the container when done with `docker compose down`.
+- Create a `.env` file in the project root by copying the template `.env.example`, where `{USERNAME}` and `{PASSWORD}` are replaced accordingly by the username and password for your MySQL database. `{ROOT_PASSWORD}` is not particularly important.
 - Install maven such that you can run `mvn` commands.
-- Run the MySQL database and this spring app with `mvn spring-boot:run` when in the project root directory (you may need to compile this app first via `mvn clean compile` or `mvn clean install`).
+- Run this app with `mvn spring-boot:run` when in the project root directory (you may need to compile this app first via `mvn clean compile` or `mvn clean install`).
 - If on Windows, invoke the `game/next` endpoint with the provided `next.ps1` PowerShell script, or the `actuator/health` endpoint with the provided `health.ps1` PowerShell script, using PowerShell. Alternatives are possible on Unix-derived systems via bash or zsh.
     - Acceptable invocations of the `game/next` endpoint should save results to the running MySQL database, with contents given by `GameResultEntity.java`.
     - The `actuator/health` endpoint is used to state if the app is running.
