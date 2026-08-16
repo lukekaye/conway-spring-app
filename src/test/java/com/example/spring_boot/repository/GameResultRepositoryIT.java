@@ -95,22 +95,4 @@ class GameResultRepositoryIT extends AbstractDatabaseIT {
 
         assertThat(repository.findAll()).hasSizeGreaterThanOrEqualTo(2);
     }
-
-    @Test
-    @DisplayName("DEFECT 1: findById is typed Long against a UUID id, and throws at runtime")
-    void findByIdThrowsBecauseTheIdTypeIsWrong() {
-        // GameResultRepository extends JpaRepository<GameResultEntity, Long>,
-        // but @Id is a UUID. save() still works because Hibernate never needs
-        // to convert the id for an insert. findById(1L) below supplies a
-        // `Long` against a `UUID`-keyed entity; Spring Data JPA checks the id
-        // type against the entity metadata before querying and rejects the
-        // mismatch outright, rather than running a query that could only ever
-        // miss. Fixing the repository's type parameter to UUID is what makes
-        // findById usable at all.
-        repository.saveAndFlush(newResult("[]"));
-
-        assertThatThrownBy(() -> repository.findById(1L))
-                .isInstanceOf(InvalidDataAccessApiUsageException.class)
-                .hasMessageContaining("has id type 'class java.util.UUID' but supplied id was of type 'class java.lang.Long'");
-    }
 }

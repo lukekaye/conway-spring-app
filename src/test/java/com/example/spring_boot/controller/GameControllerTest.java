@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * <p>Not covered: the {@code JsonProcessingException} branch in
  * {@code getNextGenerations}. The {@code ObjectMapper} it uses is constructed
  * inline in the method rather than injected, so nothing on this classpath can
- * make it fail. See defect 8.
+ * make it fail.
  */
 @WebMvcTest(GameController.class)
 class GameControllerTest {
