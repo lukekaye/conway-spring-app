@@ -66,19 +66,29 @@ class GameApiIT extends AbstractDatabaseIT {
     }
 
     @Test
-    @DisplayName("DEFECT 3: an empty board reaches a real client as a bare 500, no custom error handling")
-    void emptyBoardReachesRealClientAs500() {
-        // Only a real running server can prove this. MockMvc, used in
-        // GameControllerTest, invokes the servlet in-process and never goes
-        // through a container's error-page mechanism, so it can only observe
-        // the exception being thrown, not the response a client actually gets.
+    @DisplayName("an empty board reaches a real client as 400, with the validation message as the body")
+    void emptyBoardReachesRealClientAs400() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> body = new HttpEntity<>("{\"board\": []}", headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(url("/game/next"), body, String.class);
 
-        assertThat(response.getStatusCode().value()).isEqualTo(500);
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
+        assertThat(response.getBody()).isEqualTo("Initial board state cannot be empty.");
+    }
+
+    @Test
+    @DisplayName("a jagged board reaches a real client as 400, with the validation message as the body")
+    void jaggedBoardReachesRealClientAs400() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> body = new HttpEntity<>("{\"board\": [[0,0,0],[0,0]]}", headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url("/game/next"), body, String.class);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
+        assertThat(response.getBody()).isEqualTo("Board must be rectangular: row 0 has length 3, but row 1 has length 2.");
     }
 
     @Test

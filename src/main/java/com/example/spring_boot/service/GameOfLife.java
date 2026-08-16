@@ -7,7 +7,22 @@ public class GameOfLife {
 
     public GameOfLife(int[][] initialState) {
         if (initialState == null) {
-            throw new IllegalArgumentException("Initial board state cannot be null.");
+            throw new InvalidBoardException("Initial board state cannot be null.");
+        }
+        if (initialState.length == 0) {
+            throw new InvalidBoardException("Initial board state cannot be empty.");
+        }
+        int expectedCols = initialState[0].length;
+        for (int row = 0; row < initialState.length; row++) {
+            if (initialState[row] == null) {
+                throw new InvalidBoardException("Board must be rectangular: row " + row + " is null.");
+            }
+            if (initialState[row].length != expectedCols) {
+                throw new InvalidBoardException(
+                    "Board must be rectangular: row 0 has length " + expectedCols
+                    + ", but row " + row + " has length " + initialState[row].length + "."
+                );
+            }
         }
         rows = initialState.length;
         cols = initialState[0].length;

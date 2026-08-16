@@ -8,6 +8,7 @@ import java.time.Instant;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ import com.example.spring_boot.dto.GameResponse;
 import com.example.spring_boot.dto.GenerationState;
 import com.example.spring_boot.service.GameOfLife;
 import com.example.spring_boot.service.DefaultBoards;
+import com.example.spring_boot.service.InvalidBoardException;
 import com.example.spring_boot.entity.GameResultEntity;
 import com.example.spring_boot.repository.GameResultRepository;
 
@@ -72,6 +74,11 @@ public class GameController {
         gameResultRepository.save(entity);
 
         return ResponseEntity.ok(new GameResponse(generations));
+    }
+
+    @ExceptionHandler(InvalidBoardException.class)
+    public ResponseEntity<String> handleInvalidBoard(InvalidBoardException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     private int[][] getDefaultBoard(String requestedName) {

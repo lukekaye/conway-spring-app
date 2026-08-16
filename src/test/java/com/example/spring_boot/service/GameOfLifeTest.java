@@ -249,7 +249,7 @@ class GameOfLifeTest {
     @DisplayName("a null initial board is rejected")
     void nullBoardThrows() {
         assertThatThrownBy(() -> new GameOfLife(null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidBoardException.class)
                 .hasMessage("Initial board state cannot be null.");
     }
 
@@ -280,34 +280,53 @@ class GameOfLifeTest {
     }
 
     @Nested
-    @DisplayName("DEFECT 3: malformed boards crash with the wrong exception type")
+    @DisplayName("malformed boards are rejected with InvalidBoardException")
     class MalformedBoards {
 
         @Test
-        @DisplayName("an empty board throws ArrayIndexOutOfBoundsException, not IllegalArgumentException")
-        void emptyBoardThrowsWrongException() {
-            // The constructor checks for `null` two lines above this, but never
-            // checks for a zero-length outer array before reading
-            // initialState[0].length. It ought to throw IllegalArgumentException
-            // the same way the null check does.
+        @DisplayName("an empty board is rejected")
+        void emptyBoardIsRejected() {
             assertThatThrownBy(() -> new GameOfLife(new int[0][]))
-                    .isInstanceOf(ArrayIndexOutOfBoundsException.class);
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Initial board state cannot be empty.");
         }
 
         @Test
-        @DisplayName("a jagged board throws ArrayIndexOutOfBoundsException during evolution")
-        void jaggedBoardThrowsDuringEvolution() {
-            // `cols` is taken from row 0 only, so a later, shorter row is read
-            // past its own length as soon as evolution reaches it. Nothing
-            // validates that a board is rectangular, despite the README
-            // stating that it must be.
+        @DisplayName("a row shorter than row 0 is rejected")
+        void shorterRowIsRejected() {
             int[][] jagged = {
-                    {0, 0, 0},
-                    {0, 0},
+                {0, 0, 0},
+                {0, 0},
             };
 
-            assertThatThrownBy(() -> new GameOfLife(jagged).nextGeneration())
-                    .isInstanceOf(ArrayIndexOutOfBoundsException.class);
+            assertThatThrownBy(() -> new GameOfLife(jagged))
+                    .isInstanceOf(InvalidBoardException.class)
+                    .hasMessage("Board must be rectangular: row 0 has length 3, but row 1 has length 2.");
+        }
+
+        @Test
+        @DisplayName("a row longer than row 0 is rejected")
+        void longerRowIsRejected() {
+            int[][] jagged = {
+                    {0, 0},
+                    {0, 0, 0},
+            };
+
+            assertThatThrownBy(() -> new GameOfLife(jagged))
+                    .isInstanceOf(InvalidBoardException.class)
+                    .hasMessage("Board must be rectangular: row 0 has length 2, but row 1 has length 3.");
+        }
+
+        @Test
+        @DisplayName("a null row is rejected")
+        void nullRowIsRejected() {
+            int[][] board = new int[2][];
+            board[0] = new int[]{0, 0};
+            board[1] = null;
+
+            assertThatThrownBy(() -> new GameOfLife(board))
+                    .isInstanceOf(InvalidBoardException.class)
+                    .hasMessage("Board must be rectangular: row 1 is null.");
         }
     }
 }
