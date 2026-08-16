@@ -1,7 +1,6 @@
 package com.example.spring_boot.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -15,14 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-/**
- * Runs against a real MySQL 8 container, not H2, so the mapping is proven
- * against the actual production database engine. {@code Replace.NONE} keeps
- * the Testcontainers-supplied datasource in place; without it, {@code
- * @DataJpaTest} swaps in an embedded database by default.
- */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class GameResultRepositoryIT extends AbstractDatabaseIT {
@@ -94,23 +86,5 @@ class GameResultRepositoryIT extends AbstractDatabaseIT {
         repository.saveAndFlush(newResult("[]"));
 
         assertThat(repository.findAll()).hasSizeGreaterThanOrEqualTo(2);
-    }
-
-    @Test
-    @DisplayName("DEFECT 1: findById is typed Long against a UUID id, and throws at runtime")
-    void findByIdThrowsBecauseTheIdTypeIsWrong() {
-        // GameResultRepository extends JpaRepository<GameResultEntity, Long>,
-        // but @Id is a UUID. save() still works because Hibernate never needs
-        // to convert the id for an insert. findById(1L) below supplies a
-        // `Long` against a `UUID`-keyed entity; Spring Data JPA checks the id
-        // type against the entity metadata before querying and rejects the
-        // mismatch outright, rather than running a query that could only ever
-        // miss. Fixing the repository's type parameter to UUID is what makes
-        // findById usable at all.
-        repository.saveAndFlush(newResult("[]"));
-
-        assertThatThrownBy(() -> repository.findById(1L))
-                .isInstanceOf(InvalidDataAccessApiUsageException.class)
-                .hasMessageContaining("has id type 'class java.util.UUID' but supplied id was of type 'class java.lang.Long'");
     }
 }

@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * <p>Not covered: the {@code JsonProcessingException} branch in
  * {@code getNextGenerations}. The {@code ObjectMapper} it uses is constructed
  * inline in the method rather than injected, so nothing on this classpath can
- * make it fail. See defect 8.
+ * make it fail.
  */
 @WebMvcTest(GameController.class)
 class GameControllerTest {
@@ -333,12 +333,36 @@ class GameControllerTest {
     }
 
     @Test
-    @DisplayName("DEFECT 3: an empty board is accepted by the DTO but crashes the simulation")
-    void emptyBoardCrashesTheSimulation() {
-        assertThatThrownBy(() -> mockMvc.perform(post("/game/next")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"board\": []}")))
-                .hasRootCauseInstanceOf(ArrayIndexOutOfBoundsException.class);
+    @DisplayName("an empty board is rejected with 400, and never reaches persistence")
+    void emptyBoardIsRejectedWithBadRequest() throws Exception {
+        mockMvc.perform(post("/game/next")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"board\": []}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoMoreInteractions(gameResultRepository);
+    }
+
+    @Test
+    @DisplayName("a jagged board is rejected with 400, and never reaches persistence")
+    void jaggedBoardIsRejectedWithBadRequest() throws Exception {
+        mockMvc.perform(post("/game/next")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"board\": [[0,0,0],[0,0]]}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoMoreInteractions(gameResultRepository);
+    }
+
+    @Test
+    @DisplayName("a non-binary board is rejected with 400, and never reaches persistence")
+    void nonBinaryBoardIsRejectedWithBadRequest() throws Exception {
+        mockMvc.perform(post("/game/next")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"board\": [[0,1,0],[0,2,0],[0,0,0]]}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoMoreInteractions(gameResultRepository);
     }
 
     @Test
