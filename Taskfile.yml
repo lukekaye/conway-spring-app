@@ -9,4 +9,4 @@ tasks:
   next:
     desc: Progress the simulation
     cmds:
-      - 'curl -s -X POST http://localhost:8080/game/next -H "Content-Type: application/json" -d @requests/next.json | jq .'
+      - 'curl -s -X POST http://localhost:8080/game/next -H "Content-Type: application/json" -d @requests/next.json'

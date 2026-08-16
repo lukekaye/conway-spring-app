@@ -355,6 +355,17 @@ class GameControllerTest {
     }
 
     @Test
+    @DisplayName("a non-binary board is rejected with 400, and never reaches persistence")
+    void nonBinaryBoardIsRejectedWithBadRequest() throws Exception {
+        mockMvc.perform(post("/game/next")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"board\": [[0,1,0],[0,2,0],[0,0,0]]}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoMoreInteractions(gameResultRepository);
+    }
+
+    @Test
     @DisplayName("malformed JSON is rejected with 400")
     void malformedJsonReturns400() throws Exception {
         mockMvc.perform(post("/game/next")

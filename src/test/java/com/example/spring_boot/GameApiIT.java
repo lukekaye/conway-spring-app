@@ -92,6 +92,19 @@ class GameApiIT extends AbstractDatabaseIT {
     }
 
     @Test
+    @DisplayName("a non-binary board reaches a real client as 400, with the validation message as the body")
+    void nonBinaryBoardReachesRealClientAs400() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> body = new HttpEntity<>("{\"board\": [[0,1,0],[0,2,0],[0,0,0]]}", headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url("/game/next"), body, String.class);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
+        assertThat(response.getBody()).contains("Board cells must contain only 0 or 1: row 1, column 1 has value 2.");
+    }
+
+    @Test
     @DisplayName("GET /actuator/health reports UP")
     void healthEndpointReportsUp() {
         ResponseEntity<String> response = restTemplate.getForEntity(url("/actuator/health"), String.class);

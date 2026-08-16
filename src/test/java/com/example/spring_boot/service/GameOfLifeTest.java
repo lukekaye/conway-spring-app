@@ -5,6 +5,7 @@ import static com.example.spring_boot.support.Boards.glider;
 import static com.example.spring_boot.support.Boards.parse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -254,28 +255,54 @@ class GameOfLifeTest {
     }
 
     @Nested
-    @DisplayName("unvalidated inputs (see the defect list for fixes)")
-    class UnvalidatedInputs {
+    @DisplayName("board cell values")
+    class CellValues {
 
-        @Test
-        @DisplayName("DEFECT 2: a cell holding a value other than 0 or 1 is accepted, and corrupts neighbour counts")
-        void nonBinaryCellValueIsUnvalidated() {
-            // A "2" is dead by the `== 1` liveness check on its own fate, but
-            // countLiveNeighbours adds the raw cell value, so it contributes 2
-            // to a neighbour's count instead of 0 or 1. Nothing on this
-            // classpath validates board contents.
+        @ParameterizedTest
+        @CsvSource({
+            "0",
+            "1"
+        })
+        @DisplayName("0 and 1 are valid cell values")
+        void binaryCellValuesAreAccepted(int value) {
             int[][] board = {
-                    {2, 1, 0},
-                    {0, 0, 0},
-                    {0, 0, 0},
+                {0, value},
+                {1, 0}
             };
 
-            int[][] next = new GameOfLife(board).nextGeneration();
+            assertThatCode(() -> new GameOfLife(board))
+                    .doesNotThrowAnyException();
+        }
 
-            // (0,1) is alive, and its in-bounds neighbours sum to 2 (the "2"
-            // at (0,0), plus three 0s) — read by the rules as 2 neighbours,
-            // so it survives.
-            assertThat(next[0][1]).isEqualTo(1);
+        @ParameterizedTest
+        @CsvSource({
+            "-1",
+            "2",
+            "99"
+        })
+        @DisplayName("a cell holding a value other than 0 or 1 is rejected")
+        void nonBinaryCellValuesAreRejected(int invalidValue) {
+            int[][] board = {
+                {0, invalidValue},
+                {1, 0}
+            };
+
+            assertThatThrownBy(() -> new GameOfLife(board))
+                    .isInstanceOf(InvalidBoardException.class)
+                    .hasMessage("Board cells must contain only 0 or 1: row 0, column 1 has value " + invalidValue + ".");
+        }
+
+        @Test
+        @DisplayName("an invalid value anywhere in the board is rejected")
+        void invalidValueInLaterRowIsRejected() {
+            int[][] board = {
+                {0, 1, 0},
+                {0, 0, 0},
+                {0, 0, -1}
+            };
+
+            assertThatThrownBy(() -> new GameOfLife(board))
+                    .isInstanceOf(InvalidBoardException.class);
         }
     }
 

@@ -15,12 +15,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-/**
- * Runs against a real MySQL 8 container, not H2, so the mapping is proven
- * against the actual production database engine. {@code Replace.NONE} keeps
- * the Testcontainers-supplied datasource in place; without it, {@code
- * @DataJpaTest} swaps in an embedded database by default.
- */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class GameResultRepositoryIT extends AbstractDatabaseIT {
