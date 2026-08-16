@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  health:
+    desc: Check health
+    cmds:
+      - curl -s http://localhost:8080/actuator/health | jq .
+
+  next:
+    desc: Progress the simulation
+    cmds:
+      - 'curl -s -X POST http://localhost:8080/game/next -H "Content-Type: application/json" -d @requests/next.json | jq .'

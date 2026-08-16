@@ -6,7 +6,7 @@
 - Create a `.env` file in the project root by copying the template `.env.example`, where `{USERNAME}` and `{PASSWORD}` are replaced accordingly by the username and password for your MySQL database. `{ROOT_PASSWORD}` is not particularly important.
 - Install maven such that you can run `mvn` commands.
 - Run this app with `mvn spring-boot:run` when in the project root directory (you may need to compile this app first via `mvn clean compile` or `mvn clean install`).
-- If on Windows, invoke the `game/next` endpoint with the provided `next.ps1` PowerShell script, or the `actuator/health` endpoint with the provided `health.ps1` PowerShell script, using PowerShell. Alternatives are possible on Unix-derived systems via bash or zsh.
+- Invoke the `game/next` endpoint with `task next`, or the `actuator/health` endpoint with `task health`. These run commands given in `Taskfile.yml`. Go-Task needs to be installed to run these, but the `curl` commands in the YAML can be run manually.
     - Acceptable invocations of the `game/next` endpoint should save results to the running MySQL database, with contents given by `GameResultEntity.java`.
     - The `actuator/health` endpoint is used to state if the app is running.
 
